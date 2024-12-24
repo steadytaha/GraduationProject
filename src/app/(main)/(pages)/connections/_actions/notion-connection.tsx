@@ -66,11 +66,6 @@ export const onCreateNewPageInDatabase = async (
   databaseId: string,
   accessToken: string,
   content: string,
-  properties?: {
-    Class?: string;
-    Type?: string;
-    Reviewed?: boolean;
-  }
 ) => {
   const notion = new Client({
     auth: accessToken,
@@ -92,31 +87,13 @@ export const onCreateNewPageInDatabase = async (
             },
           ],
         },
-        ...(properties?.Class && {
-          'Class': {
-            select: {
-              name: properties.Class
-            }
-          }
-        }),
-        ...(properties?.Type && {
-          'Type': {
-            select: {
-              name: properties.Type
-            }
-          }
-        }),
-        ...(properties?.Reviewed !== undefined && {
-          'Reviewed': {
-            checkbox: properties.Reviewed
-          }
-        })
       },
     })
 
     if (response) {
       const pageInfo = await getNotionPage(response.id, accessToken)
       console.log('Page Info:', pageInfo)
+      await updateNotionPage(response.id, accessToken)
       return response
     }
   } catch (error) {
@@ -135,7 +112,17 @@ export const updateNotionPage = async (pageId: string, accessToken: string) => {
       page_id: pageId,
       properties: {
         'Reviewed': {
-          checkbox: true,
+          checkbox: true,  // There should be a varible
+        },
+        'Class': {
+          select: { 
+            name: 'ESOF 202' // There should be a varible
+          }
+        },
+        'Type': {
+          select: { 
+            name: 'Lecture' // There should be a varible
+          }
         },
       },
     });
